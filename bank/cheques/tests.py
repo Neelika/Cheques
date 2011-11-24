@@ -1,22 +1,37 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+import datetime
+from datetime import timedelta
+from django.forms.fields import DateField, TimeField, ChoiceField, MultipleChoiceField
+from django.forms.widgets import RadioSelect
+try:
+    from decimal import Decimal
+except ImportError:
+    from django.utils._decimal import Decimal
 
-Replace these with more appropriate tests for your application.
-"""
-
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+class NavigationTestCase(TestCase):
+    
+    def setUp(self):
+        pass        
+   
+    def test_NavigationHome(self):
         """
-        Tests that 1 + 1 always equals 2.
+        Checks whether all the pages are navigable or not.
         """
-        self.failUnlessEqual(1 + 1, 2)
+        c = Client()
+        response = c.post('/cheques/')
+        self.assertEqual(response.status_code, 200)
+        
+        
+    def test_IssueChequeBook(self):
+	account_number='30446461991'
+	newAccount = Account.objects.create(account_number= '30446461991', balance= 5000, name='sakshi', number_of_chequebooks=0)
+	first_cheque_number=111111
+	c = Client()
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+	response = c.post('/cheques/employeeMenu/e_issueChequeBook/?account_number=30446461991',{'size': 20})
+	cb_size=0
+	for num in ChequeBook.objects.all():
+		a_num=num.account_number_id
+		if account_number=='30446461991':
+			cb_size=num.size
 
->>> 1 + 1 == 2
-True
-"""}
-
+        self.assertEqual(response.status_code,200)
